@@ -3,70 +3,153 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Rémanence — Send self-destructing messages. No registration, no tracking, no trace." />
+    <meta
+      name="description"
+      content="Rémanence — Send self-destructing messages. No registration, no tracking, no trace."
+    />
     <title>Rémanence — Ephemeral Messages</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       html {
         background-color: #0f0f10;
         color: #f5f5f5;
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
       }
       /* Fade in */
       @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(12px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
-      .fade-up { animation: fadeUp 0.5s ease-out both; }
-      .fade-up-d1 { animation: fadeUp 0.5s ease-out 0.1s both; }
-      .fade-up-d2 { animation: fadeUp 0.5s ease-out 0.2s both; }
-      .fade-up-d3 { animation: fadeUp 0.5s ease-out 0.35s both; }
+      .fade-up {
+        animation: fadeUp 0.5s ease-out both;
+      }
+      .fade-up-d1 {
+        animation: fadeUp 0.5s ease-out 0.1s both;
+      }
+      .fade-up-d2 {
+        animation: fadeUp 0.5s ease-out 0.2s both;
+      }
+      .fade-up-d3 {
+        animation: fadeUp 0.5s ease-out 0.35s both;
+      }
       /* Subtle glow on textarea focus */
-      textarea { transition: box-shadow 0.2s ease, border-color 0.2s ease; }
-      textarea:focus { outline: 0 !important; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.3); }
+      textarea {
+        transition:
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+      textarea:focus {
+        outline: 0 !important;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        border-color: rgba(220, 38, 38, 0.3);
+      }
       /* Toggle switch */
-      .tgl { display: none; }
+      .tgl {
+        display: none;
+      }
       .tgl + .tgl-btn {
-        outline: 0; display: block; width: 57px; height: 27px;
-        position: relative; cursor: pointer; user-select: none;
-        background: #374151; border-radius: 20rem; padding: 2px;
-        transition: all 0.4s ease; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+        outline: 0;
+        display: block;
+        width: 57px;
+        height: 27px;
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        background: #374151;
+        border-radius: 20rem;
+        padding: 2px;
+        transition: all 0.4s ease;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
       }
       /* Knob */
       .tgl + .tgl-btn:after {
-        position: relative; display: block; content: ""; width: 23px; height: 23px;
-        left: 0; border-radius: 50%; background: #d1d5db;
-        transition: left 0.3s cubic-bezier(0.175,0.885,0.32,1.275), padding 0.3s ease, margin 0.3s ease;
-        box-shadow: 0 1px 2px 0 rgba(0,0,0,0.3);
+        position: relative;
+        display: block;
+        content: "";
+        width: 23px;
+        height: 23px;
+        left: 0;
+        border-radius: 50%;
+        background: #d1d5db;
+        transition:
+          left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          padding 0.3s ease,
+          margin 0.3s ease;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
       }
-      .tgl:checked + .tgl-btn { background: #dc2626; }
-      .tgl:checked + .tgl-btn:after { left: 30px; background: #fff; }
-      .tgl + .tgl-btn:active { box-shadow: inset 0 0 0 30px rgba(0,0,0,0.1); }
-      .tgl + .tgl-btn:active:after { padding-right: 0.4em; }
-      .tgl:checked + .tgl-btn:active:after { margin-left: -0.4em; }
+      .tgl:checked + .tgl-btn {
+        background: #dc2626;
+      }
+      .tgl:checked + .tgl-btn:after {
+        left: 30px;
+        background: #fff;
+      }
+      .tgl + .tgl-btn:active {
+        box-shadow: inset 0 0 0 30px rgba(0, 0, 0, 0.1);
+      }
+      .tgl + .tgl-btn:active:after {
+        padding-right: 0.4em;
+      }
+      .tgl:checked + .tgl-btn:active:after {
+        margin-left: -0.4em;
+      }
       /* Popup overlay */
       .popup-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-        display: flex; align-items: center; justify-content: center;
-        backdrop-filter: blur(8px); z-index: 50;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px);
+        z-index: 50;
         animation: fadeUp 0.2s ease-out both;
       }
       /* Secret message reveal */
       @keyframes revealMessage {
-        from { opacity: 0; transform: scale(0.97); filter: blur(4px); }
-        to { opacity: 1; transform: scale(1); filter: blur(0); }
+        from {
+          opacity: 0;
+          transform: scale(0.97);
+          filter: blur(4px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+          filter: blur(0);
+        }
       }
-      .reveal { animation: revealMessage 0.6s ease-out both; }
+      .reveal {
+        animation: revealMessage 0.6s ease-out both;
+      }
     </style>
   </head>
 
   <body class="flex flex-col flex-1 items-center">
-
     <!-- Hero -->
     <header class="flex flex-col items-center mt-12 sm:mt-16 mb-6 fade-up">
-      <img src="./logo.png" alt="Rémanence" class="w-28 h-28 sm:w-36 sm:h-36 object-contain mb-4 rounded-3xl" />
-      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Send messages that <span class="text-red-500">vanish</span>.</h1>
-      <p class="text-gray-500 text-sm mt-2 max-w-md text-center">Write something confidential, share the link — it self-destructs after being read. No account needed.</p>
+      <img
+        src="./logo.png"
+        alt="Rémanence"
+        class="w-28 h-28 sm:w-36 sm:h-36 object-contain mb-4 rounded-3xl"
+      />
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+        Send messages that <span class="text-red-500">vanish</span>.
+      </h1>
+      <p class="text-gray-500 text-sm mt-2 max-w-md text-center">
+        Write something confidential, share the link — it self-destructs after
+        being read. No account needed.
+      </p>
     </header>
 
     <!-- Main content -->
@@ -76,28 +159,75 @@
     ></div>
 
     <!-- Trust indicators -->
-    <div id="trust-badges" class="flex gap-6 sm:gap-8 mt-8 mb-6 text-gray-600 text-xs fade-up-d3">
+    <div
+      id="trust-badges"
+      class="flex gap-6 sm:gap-8 mt-8 mb-6 text-gray-600 text-xs fade-up-d3"
+    >
       <span class="flex items-center gap-1.5">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        <svg
+          class="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
+        </svg>
         No tracking
       </span>
       <span class="flex items-center gap-1.5">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        <svg
+          class="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          />
+        </svg>
         No registration
       </span>
       <span class="flex items-center gap-1.5">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+        <svg
+          class="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+          />
+        </svg>
         Open source
       </span>
     </div>
 
     <!-- Footer -->
     <footer class="mt-auto w-full text-center text-gray-600 text-xs py-6">
-      <a href="/about" class="hover:text-gray-400 transition-colors">About <strong class="text-red-500/70">Rémanence</strong></a>
+      <a href="/about" class="hover:text-gray-400 transition-colors"
+        >About <strong class="text-red-500/70">Rémanence</strong></a
+      >
       <span class="mx-2">·</span>
-      <a href="https://github.com/sponsors/ThiraSoft" target="_blank" rel="noopener noreferrer" class="hover:text-red-400 transition-colors">Support the project</a>
+      <a
+        href="https://github.com/sponsors/ThiraSoft"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-red-400 transition-colors"
+        >Support the project</a
+      >
       <span class="mx-2">·</span>
-      <span>&copy; 2025</span>
+      <span>Released under the MIT License</span>
     </footer>
 
     <script>
@@ -132,7 +262,8 @@
         // Hide trust badges and tagline when viewing a message
         document.getElementById("trust-badges").style.display = "none";
         document.querySelector("header p").style.display = "none";
-        document.querySelector("header h1").innerHTML = 'Someone sent you a <span class="text-red-500">secret</span>.';
+        document.querySelector("header h1").innerHTML =
+          'Someone sent you a <span class="text-red-500">secret</span>.';
 
         container.innerHTML = `
           <div class="flex flex-col items-center py-8">
@@ -178,7 +309,14 @@
               try {
                 await navigator.clipboard.writeText(data.content);
                 copyDiv.classList.add("!bg-gray-700", "!border-gray-600");
-                setTimeout(() => copyDiv.classList.remove("!bg-gray-700", "!border-gray-600"), 200);
+                setTimeout(
+                  () =>
+                    copyDiv.classList.remove(
+                      "!bg-gray-700",
+                      "!border-gray-600",
+                    ),
+                  200,
+                );
                 notice.style.opacity = 1;
                 setTimeout(() => (notice.style.opacity = 0), 2500);
               } catch {
@@ -208,10 +346,16 @@
         formData.append("isOneShot", isOneShot);
 
         const btn = document.getElementById("submit-btn");
-        if (btn) { btn.disabled = true; btn.textContent = "Sending..."; }
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = "Sending...";
+        }
 
         try {
-          const response = await fetch("/api/v1/messages", { method: "POST", body: formData });
+          const response = await fetch("/api/v1/messages", {
+            method: "POST",
+            body: formData,
+          });
           if (!response.ok) {
             const err = await response.json().catch(() => null);
             showError(err?.error || `Error: ${response.status}`);
@@ -220,11 +364,17 @@
           const data = await response.json();
           displaySuccessPopup(data.id, isOneShot);
           const input = document.getElementById("message-input");
-          if (input) { input.value = ""; updateCharCount(); }
+          if (input) {
+            input.value = "";
+            updateCharCount();
+          }
         } catch {
           showError("Network error. Please try again.");
         } finally {
-          if (btn) { btn.disabled = false; btn.textContent = "Send"; }
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = "Send";
+          }
         }
       }
 
@@ -233,12 +383,15 @@
         if (!el) {
           el = document.createElement("p");
           el.id = "error-msg";
-          el.className = "text-red-400 text-sm mt-2 transition-opacity duration-300";
+          el.className =
+            "text-red-400 text-sm mt-2 transition-opacity duration-300";
           container.appendChild(el);
         }
         el.textContent = msg;
         el.style.opacity = 1;
-        setTimeout(() => { el.style.opacity = 0; }, 4000);
+        setTimeout(() => {
+          el.style.opacity = 0;
+        }, 4000);
       }
 
       // ── Settings popup ──
@@ -289,7 +442,7 @@
           document.removeEventListener("keyup", handleEnter);
         };
 
-        popup.addEventListener("click", (e) => { 
+        popup.addEventListener("click", (e) => {
           if (e.target === popup) {
             popup.remove();
             cleanup();
@@ -307,10 +460,16 @@
           valueEl.textContent = humanTime(+lifeLimitEl.value);
           if (oneShotEl.checked) {
             labelEl.textContent = "Maximum lifetime:";
-            hintEl.textContent = "Destroyed on first read, or after " + humanTime(+lifeLimitEl.value) + " if unread.";
+            hintEl.textContent =
+              "Destroyed on first read, or after " +
+              humanTime(+lifeLimitEl.value) +
+              " if unread.";
           } else {
             labelEl.textContent = "Self-destruct after:";
-            hintEl.textContent = "Readable multiple times, destroyed after " + humanTime(+lifeLimitEl.value) + ".";
+            hintEl.textContent =
+              "Readable multiple times, destroyed after " +
+              humanTime(+lifeLimitEl.value) +
+              ".";
           }
         }
 
@@ -353,7 +512,9 @@
             </div>
           </div>
         `;
-        popup.addEventListener("click", (e) => { if (e.target === popup) popup.remove(); });
+        popup.addEventListener("click", (e) => {
+          if (e.target === popup) popup.remove();
+        });
         document.body.appendChild(popup);
 
         const notice = document.getElementById("copyNotice2");
@@ -366,21 +527,28 @@
         }
 
         // Auto-copy
-        navigator.clipboard.writeText(messageUrl).then(() => flashCopied("Copied!")).catch(() => {});
+        navigator.clipboard
+          .writeText(messageUrl)
+          .then(() => flashCopied("Copied!"))
+          .catch(() => {});
 
-        document.getElementById("closeBtn").addEventListener("click", () => popup.remove());
-        document.getElementById("urlDisplay").addEventListener("click", async () => {
-          try {
-            await navigator.clipboard.writeText(messageUrl);
-            flashCopied("Copied!");
-          } catch {
-            const range = document.createRange();
-            range.selectNodeContents(document.getElementById("urlDisplay"));
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            flashCopied("Press Ctrl/Cmd+C to copy");
-          }
-        });
+        document
+          .getElementById("closeBtn")
+          .addEventListener("click", () => popup.remove());
+        document
+          .getElementById("urlDisplay")
+          .addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(messageUrl);
+              flashCopied("Copied!");
+            } catch {
+              const range = document.createRange();
+              range.selectNodeContents(document.getElementById("urlDisplay"));
+              window.getSelection().removeAllRanges();
+              window.getSelection().addRange(range);
+              flashCopied("Press Ctrl/Cmd+C to copy");
+            }
+          });
       }
 
       // ── Character counter ──
@@ -391,9 +559,10 @@
         if (!input || !counter) return;
         const len = [...input.value].length;
         counter.textContent = `${len} / ${MAX_LENGTH}`;
-        counter.className = len > MAX_LENGTH
-          ? "text-red-400 text-xs mt-1.5"
-          : "text-gray-600 text-xs mt-1.5";
+        counter.className =
+          len > MAX_LENGTH
+            ? "text-red-400 text-xs mt-1.5"
+            : "text-gray-600 text-xs mt-1.5";
         if (btn) btn.disabled = len === 0 || len > MAX_LENGTH;
       }
 
@@ -431,8 +600,10 @@
             messageSettingsPopup();
           }
         });
-        document.getElementById("submit-btn").addEventListener("click", () => messageSettingsPopup());
-        
+        document
+          .getElementById("submit-btn")
+          .addEventListener("click", () => messageSettingsPopup());
+
         // OS-specific shortcut label
         const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
         const labelEl = document.getElementById("shortcut-label");
