@@ -77,6 +77,17 @@ Run it anywhere:
 
 ---
 
+## 🎨 User Interface
+
+Rémanence includes a modern and responsive web interface for a seamless user experience.
+
+- **Integrated Delivery**: The UI is served directly by the Go binary, eliminating the need for a separate frontend server or complex build pipeline.
+- **Simplified Workflow**: A clean interface allowing users to quickly enter their secret message and generate a secure link.
+- **Flexible Configuration**: A dedicated popup allows the fine-tuning of message modalities (expiration time and one-shot settings) before creation.
+
+---
+
+
 ## 🚀 Production ready
 
 Built in Go for:
