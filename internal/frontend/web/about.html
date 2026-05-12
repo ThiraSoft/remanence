@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Rémanence is an ephemeral messaging service: your messages self-destruct after being read or after expiration. Security, simplicity and privacy."
+    />
+    <meta
+      name="keywords"
+      content="ephemeral message, self-destructing message, secure message, privacy, temporary link, one-time message, private message"
+    />
+    <meta name="author" content="Rémanence" />
+    <title>About — Rémanence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-color: #0a0a0b;
+        color: #f5f5f5;
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+
+  <body
+    class="text-gray-200 font-sans flex flex-col flex-wrap min-h-screen w-full items-center"
+  >
+    <header class="pt-6 text-center">
+      <a
+        href="/"
+        class="inline-block text-white font-medium rounded-xl transition-transform transform hover:scale-105"
+      >
+        <img
+          src="/logo.png"
+          alt="Rémanence Logo"
+          class="w-48 h-48 sm:w-56 sm:h-56 mx-auto object-contain rounded-3xl"
+        />
+      </a>
+    </header>
+
+    <main class="max-w-4xl w-[92%] p-6 mt-8 bg-neutral-900 rounded-2xl">
+      <section>
+        <h2 class="text-2xl font-semibold text-red-500 mb-4">About</h2>
+        <p class="text-gray-300 mb-6">
+          Rémanence is an <strong>ephemeral messaging</strong> service designed
+          to protect the privacy of your communications. Each message is
+          accessible <strong>only once</strong> or for a limited time,
+          before being destroyed forever.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold text-red-500 mb-4">
+          Why Rémanence?
+        </h2>
+        <p class="text-gray-300 mb-6">
+          In a world where everything is archived, saved and analyzed, Rémanence
+          chooses to forget. We believe a message can exist for a moment,
+          then vanish.
+          <strong>No history. No footprint. No trace.</strong>
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold text-red-500 mb-4">
+          How does it work?
+        </h2>
+        <p class="text-gray-300 mb-4">
+          Create a confidential message, share the generated link — and let
+          Rémanence handle the rest:
+        </p>
+        <ul class="list-disc list-inside space-y-1 text-gray-400">
+          <li>the message is stored temporarily;</li>
+          <li>it self-destructs after being read or after a chosen delay;</li>
+          <li>no personal data is ever recorded.</li>
+        </ul>
+      </section>
+
+      <section class="mt-6">
+        <h2 class="text-2xl font-semibold text-red-500 mb-4">API</h2>
+        <p class="text-gray-300 mb-6">
+          Integrate Rémanence into your scripts, bots, or CI pipelines with two
+          simple endpoints.
+        </p>
+
+        <!-- POST -->
+        <h3 class="text-white font-semibold text-sm mb-2">Create a message</h3>
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-3"><code>POST /api/v1/messages</code></pre>
+        <p class="text-gray-400 text-sm mb-2">Form parameters:</p>
+        <ul class="list-disc list-inside space-y-1 text-gray-400 text-sm mb-3">
+          <li><code class="text-red-400">content</code> — the secret message (required, max 1024 chars)</li>
+          <li><code class="text-red-400">lifeLimit</code> — lifetime in minutes, 1–1440 (default: 1440)</li>
+          <li><code class="text-red-400">isOneShot</code> — <code class="text-gray-300">true</code> to destroy after first read (default: true)</li>
+        </ul>
+        <p class="text-gray-400 text-sm mb-1">Example:</p>
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl -X POST https://remanence.app/api/v1/messages \
+  -d "content=my secret" \
+  -d "isOneShot=true" \
+  -d "lifeLimit=60"</code></pre>
+        <p class="text-gray-400 text-sm mb-6">Response: <code class="text-gray-300">{"id": "aBcDeFgHiJkLmNoP"}</code></p>
+
+        <!-- GET -->
+        <h3 class="text-white font-semibold text-sm mb-2">Retrieve a message</h3>
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-3"><code>GET /api/v1/messages/{id}</code></pre>
+        <p class="text-gray-400 text-sm mb-1">Example:</p>
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl https://remanence.app/api/v1/messages/aBcDeFgHiJkLmNoP</code></pre>
+        <p class="text-gray-400 text-sm mb-1">Response:</p>
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-6"><code>{"id": "aBcDeFgHiJkLmNoP", "content": "my secret"}</code></pre>
+      </section>
+
+      <section class="mt-6">
+        <h2 class="text-2xl font-semibold text-red-500 mb-4">
+          Privacy
+        </h2>
+        <p class="text-gray-300 mb-6">
+          Rémanence does not store your messages and does not track your activity.
+          No registration, no advertising cookies. You stay in control of
+          your data — or its disappearance.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold text-red-500 mb-4">
+          Join the project
+        </h2>
+        <p class="text-gray-300 mb-6">
+          Rémanence is an independent, open-source project. You can contribute,
+          suggest improvements, or simply share the service.
+        </p>
+        <p>
+          <a
+            href="https://github.com/ThiraSoft/remanence"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-red-400 hover:underline"
+            >View the project on GitHub</a
+          >
+        </p>
+      </section>
+
+      <section class="mt-8 p-6 bg-gray-800/40 rounded-xl border border-gray-800/60">
+        <h2 class="text-2xl font-semibold text-red-500 mb-4">
+          Support Rémanence
+        </h2>
+        <p class="text-gray-300 mb-3">
+          Rémanence has no ads, no tracking, and no investor. It runs on the
+          support of people who believe privacy should be the default, not a
+          premium feature.
+        </p>
+        <p class="text-gray-400 mb-6 text-sm">
+          Your contribution helps pay for hosting and keeps this service free
+          for everyone. Even a small amount makes a difference.
+        </p>
+        <a
+          href="https://github.com/sponsors/ThiraSoft"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-500 rounded-lg text-white text-sm font-medium transition-all"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          Become a supporter
+        </a>
+      </section>
+    </main>
+
+    <footer class="text-center text-gray-500 text-sm py-8">
+      &copy; 2025 Rémanence — All rights reserved. |
+      <a href="/policy.html" class="text-red-400 hover:underline">Privacy Policy</a>
+    </footer>
+  </body>
+</html>
