@@ -49,7 +49,7 @@ No complex infrastructure.
 Start the service with a single command:
 
 ```bash
-docker run -p 8008:8008 remanence:latest
+docker run -p 8080:8080 remanence:latest
 ```
 
 ---
@@ -109,7 +109,7 @@ You can run Rémanence in three ways:
 
 ```bash
 make build
-docker run -p 8008:8008 remanence:latest
+docker run -p 8080:8080 remanence:latest
 ```
 
 ### 🔨 Using Make
@@ -126,7 +126,7 @@ go mod download
 go run cmd/server/main.go
 ```
 
-Your instance will be available at: `http://localhost:8008`
+Your instance will be available at: `http://localhost:8080`
 
 ---
 
@@ -265,7 +265,7 @@ Rémanence follows 12-factor app principles.
 
 | Variable      | Default | Description                             |
 | ------------- | ------- | --------------------------------------- |
-| `PORT`        | `8008`  | HTTP listening port                     |
+| `PORT`        | `8080`  | HTTP listening port (ex: `-e PORT=8008 -p 8008:8008`) |
 | `LOG_LEVEL`   | `ERROR` | `DEBUG`, `INFO`, `WARN`, `ERROR`        |
 | `TRUST_PROXY` | `false` | Enable behind Nginx/Caddy/reverse proxy |
 
