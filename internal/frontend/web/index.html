@@ -8,7 +8,52 @@
       content="Rémanence — Send self-destructing messages. No registration, no tracking, no trace."
     />
     <title>Rémanence — Ephemeral Messages</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="canonical" href="https://remanence.thirasoft.com/" />
+    <link rel="icon" href="/logo.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <meta name="theme-color" content="#0f0f10" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Rémanence" />
+    <meta property="og:title" content="Rémanence — Ephemeral Messages" />
+    <meta
+      property="og:description"
+      content="Send self-destructing messages. No registration, no tracking, no trace."
+    />
+    <meta property="og:url" content="https://remanence.thirasoft.com/" />
+    <meta
+      property="og:image"
+      content="https://remanence.thirasoft.com/logo.png"
+    />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Rémanence — Ephemeral Messages" />
+    <meta
+      name="twitter:description"
+      content="Send self-destructing messages. No registration, no tracking, no trace."
+    />
+    <meta
+      name="twitter:image"
+      content="https://remanence.thirasoft.com/logo.png"
+    />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Rémanence",
+        "url": "https://remanence.thirasoft.com/",
+        "description": "Send self-destructing messages. No registration, no tracking, no trace.",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0" }
+      }
+    </script>
+
+    <link rel="stylesheet" href="/styles.css" />
     <style>
       html {
         background-color: #0f0f10;
@@ -572,6 +617,11 @@
       const params = new URLSearchParams(window.location.search);
       const preId = params.get("message");
       if (preId) {
+        // Message pages must never be indexed by search engines.
+        const noindex = document.createElement("meta");
+        noindex.name = "robots";
+        noindex.content = "noindex, nofollow";
+        document.head.appendChild(noindex);
         loadMessage(preId);
       } else {
         container.innerHTML = `

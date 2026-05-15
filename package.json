@@ -1,0 +1,12 @@
+{
+  "name": "remanence-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i internal/frontend/tailwind-src.css -o internal/frontend/web/styles.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  }
+}

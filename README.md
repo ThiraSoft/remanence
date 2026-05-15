@@ -121,12 +121,34 @@ make build
 
 ### 💻 Local development
 
+The web UI styles are compiled with Tailwind CSS into `internal/frontend/web/styles.css`,
+which is then embedded into the Go binary. Compile the CSS once before running the server:
+
 ```bash
+make css                      # npm install + Tailwind build
 go mod download
 go run cmd/server/main.go
 ```
 
+> Re-run `make css` whenever you change the HTML in `internal/frontend/web/`.
+> Docker builds (`make build`) compile the CSS automatically — no Node.js needed on the host.
+
 Your instance will be available at: `http://localhost:8080`
+
+---
+
+## 🔍 SEO & deployment notes
+
+The frontend ships with Open Graph / Twitter cards, JSON-LD, `robots.txt` and
+`sitemap.xml`. These reference the public domain — if you self-host on your own
+domain, update the URLs accordingly:
+
+- `<link rel="canonical">` and `og:`/`twitter:` meta tags in
+  `internal/frontend/web/index.html` and `about.html`
+- `internal/frontend/web/robots.txt` (the `Sitemap:` line)
+- `internal/frontend/web/sitemap.xml` (the `<loc>` entries)
+
+Then recompile (`make css` is not required for this, just rebuild the binary).
 
 ---
 
@@ -175,7 +197,7 @@ Integrate Rémanence into:
 ### Example
 
 ```bash
-curl -X POST https://remanence.app/api/v1/messages \
+curl -X POST https://remanence.thirasoft.com/api/v1/messages \
   -d "content=my secret" \
   -d "isOneShot=true" \
   -d "lifeLimit=60"
@@ -202,7 +224,7 @@ To prevent ID enumeration, Rémanence uses a **confusion strategy**: if a messag
 ### Example
 
 ```bash
-curl https://remanence.app/api/v1/messages/aBcDeFgHiJkLmNoP
+curl https://remanence.thirasoft.com/api/v1/messages/aBcDeFgHiJkLmNoP
 ```
 
 ### Response

@@ -1,3 +1,13 @@
+# Stage 0: Build du CSS Tailwind
+FROM node:22-alpine AS css
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY internal/frontend/tailwind-src.css ./internal/frontend/
+COPY internal/frontend/web ./internal/frontend/web
+RUN npm run build:css
+
 # Stage 1: Build
 FROM golang:1.24.0-alpine3.21 AS builder
 
@@ -9,6 +19,9 @@ RUN go mod download
 
 # Copie des sources
 COPY . .
+
+# CSS compilé depuis le stage Node
+COPY --from=css /app/internal/frontend/web/styles.css ./internal/frontend/web/styles.css
 
 # Build du binaire
 ARG APP_VERSION=dev
