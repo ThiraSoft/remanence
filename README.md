@@ -289,7 +289,7 @@ Rémanence follows 12-factor app principles.
 
 | Variable      | Default | Description                             |
 | ------------- | ------- | --------------------------------------- |
-| `PORT`        | `8080`  | HTTP listening port (ex: `-e PORT=8008 -p 8008:8008`) |
+| `PORT`        | `8080`  | HTTP listening port (ex: `-e PORT=9000 -p 9000:9000`) |
 | `LOG_LEVEL`   | `ERROR` | `DEBUG`, `INFO`, `WARN`, `ERROR`        |
 | `TRUST_PROXY` | `false` | Enable behind Nginx/Caddy/reverse proxy |
 | `MESSAGE_ID_LENGTH` | `16` | Length of *generated* message IDs (tune for local vs production entropy) |

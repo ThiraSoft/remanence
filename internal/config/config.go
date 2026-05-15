@@ -12,7 +12,7 @@ var (
 	// App settings
 	AppVersion = getEnv("APP_VERSION", "undefined")
 	BuildDate  = getEnv("BUILD_DATE", time.Now().Format("2006-01-02T15:04:05-07:00"))
-	Port       = getEnv("PORT", "8008")
+	Port       = getEnv("PORT", "8080")
 	Timeout    = 30 * time.Second
 	LogLevel   = getEnv("LOG_LEVEL", "ERROR") // Log level: DEBUG, INFO, WARN, ERROR
 
