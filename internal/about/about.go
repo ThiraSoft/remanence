@@ -9,17 +9,19 @@ import (
 
 // AboutResponse represents the response structure for the /about endpoint
 type AboutResponse struct {
-	Name      string `json:"name"`
-	Version   string `json:"version"`
-	BuildDate string `json:"buildDate"`
+	Name             string `json:"name"`
+	Version          string `json:"version"`
+	BuildDate        string `json:"buildDate"`
+	MaxMessageLength int    `json:"maxMessageLength"`
 }
 
 // handleAboutEndpoint implements the /about endpoint
 func HandleAboutEndpoint(w http.ResponseWriter, r *http.Request) {
 	response := AboutResponse{
-		Name:      "remanence",
-		Version:   config.AppVersion,
-		BuildDate: config.BuildDate,
+		Name:             "remanence",
+		Version:          config.AppVersion,
+		BuildDate:        config.BuildDate,
+		MaxMessageLength: config.MaxMessageLength,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

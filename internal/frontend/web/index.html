@@ -278,7 +278,8 @@
     </footer>
 
     <script>
-      const MAX_LENGTH = 1024;
+      // Fallback until the server config is fetched from /api/v1/about.
+      let MAX_LENGTH = 1024;
       const container = document.getElementById("message-container");
 
       function escapeHtml(text) {
@@ -663,6 +664,18 @@
 
         // Auto-focus textarea
         input.focus();
+
+        // Align the character limit with the server configuration.
+        fetch("/api/v1/about")
+          .then((r) => r.json())
+          .then((cfg) => {
+            if (cfg && cfg.maxMessageLength > 0) {
+              MAX_LENGTH = cfg.maxMessageLength;
+              input.maxLength = MAX_LENGTH + 100;
+              updateCharCount();
+            }
+          })
+          .catch(() => {});
       }
     </script>
   </body>
