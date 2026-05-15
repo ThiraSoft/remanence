@@ -23,12 +23,9 @@ type Message struct {
 }
 
 const (
-	idLength = 16
-	idChars  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	idChars            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	randomContentChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?;:'-()@#&"
 )
-
-// Printable ASCII without leading bias — realistic distribution for fake content.
-const randomContentChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?;:'-()@#&"
 
 var (
 	messages = map[string]Message{}
@@ -36,9 +33,8 @@ var (
 )
 
 // generateID creates a cryptographically random base62 ID.
-// 16 chars of base62 = ~95 bits of entropy (brute-force infeasible).
 func generateID() string {
-	b := make([]byte, idLength)
+	b := make([]byte, config.MessageIDLength)
 	max := big.NewInt(int64(len(idChars)))
 	for i := range b {
 		n, _ := rand.Int(rand.Reader, max)
@@ -47,9 +43,9 @@ func generateID() string {
 	return string(b)
 }
 
-// validID checks that an ID is exactly 16 base62 characters.
+// validID checks that an ID has the configured base62 length.
 func validID(id string) bool {
-	if len(id) != idLength {
+	if len(id) != config.MessageIDLength {
 		return false
 	}
 	for _, c := range id {

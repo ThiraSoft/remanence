@@ -3,6 +3,7 @@ package config
 import (
 	"log/slog"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -20,6 +21,7 @@ var (
 	TrustProxy = strings.EqualFold(getEnv("TRUST_PROXY", "false"), "true")
 
 	// Message settings
+	MessageIDLength  = getEnvInt("MESSAGE_ID_LENGTH", 16)
 	MaxMessageLength = 1024
 	MaxLifeLimit     = 1440 // in minutes (24 hours)
 )
@@ -42,4 +44,16 @@ func getEnv(k, d string) string {
 		return v
 	}
 	return d
+}
+
+func getEnvInt(k string, d int) int {
+	v := getEnv(k, "")
+	if v == "" {
+		return d
+	}
+	i, err := strconv.Atoi(v)
+	if err != nil {
+		return d
+	}
+	return i
 }
