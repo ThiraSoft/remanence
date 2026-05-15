@@ -190,7 +190,7 @@ Integrate Rémanence into:
 
 | Parameter   | Description                                     |
 | ----------- | ----------------------------------------------- |
-| `content`   | Secret message (required, max 1024 chars)       |
+| `content`   | Secret message (required, max `MAX_MESSAGE_LENGTH` chars) |
 | `lifeLimit` | Lifetime in minutes, `1–1440` (default: `1440`) |
 | `isOneShot` | Destroy after first read (default: `true`)      |
 
@@ -220,6 +220,8 @@ curl -X POST https://remanence.thirasoft.com/api/v1/messages \
 ### Behavior
 
 To prevent ID enumeration, Rémanence uses a **confusion strategy**: if a message is not found or has expired, the system returns a random content string instead of a 404 error.
+
+IDs of **any length** are accepted (only the character set is validated), so an observer cannot infer the expected ID format from the API's behavior.
 
 ### Example
 
@@ -290,7 +292,8 @@ Rémanence follows 12-factor app principles.
 | `PORT`        | `8080`  | HTTP listening port (ex: `-e PORT=8008 -p 8008:8008`) |
 | `LOG_LEVEL`   | `ERROR` | `DEBUG`, `INFO`, `WARN`, `ERROR`        |
 | `TRUST_PROXY` | `false` | Enable behind Nginx/Caddy/reverse proxy |
-| `MESSAGE_ID_LENGTH` | `16` | Length of message IDs (tune for local vs production entropy) |
+| `MESSAGE_ID_LENGTH` | `16` | Length of *generated* message IDs (tune for local vs production entropy) |
+| `MAX_MESSAGE_LENGTH` | `1024` | Maximum message length, in characters |
 
 ---
 

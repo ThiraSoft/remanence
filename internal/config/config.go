@@ -22,7 +22,7 @@ var (
 
 	// Message settings
 	MessageIDLength  = getEnvInt("MESSAGE_ID_LENGTH", 16)
-	MaxMessageLength = 1024
+	MaxMessageLength = getEnvInt("MAX_MESSAGE_LENGTH", 1024)
 	MaxLifeLimit     = 1440 // in minutes (24 hours)
 )
 

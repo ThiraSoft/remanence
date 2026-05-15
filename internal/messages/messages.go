@@ -43,9 +43,12 @@ func generateID() string {
 	return string(b)
 }
 
-// validID checks that an ID has the configured base62 length.
+// validID checks that an ID contains only base62 characters.
+// The length is intentionally NOT constrained: accepting IDs of any
+// length maximizes confusion, since lookups for unknown IDs return
+// random content rather than revealing the expected ID format.
 func validID(id string) bool {
-	if len(id) != config.MessageIDLength {
+	if id == "" {
 		return false
 	}
 	for _, c := range id {
