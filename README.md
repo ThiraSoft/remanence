@@ -97,6 +97,10 @@ Built in Go for:
 - reliability,
 - and speed.
 
+Static assets (logo, CSS) are optimized and served with a `Cache-Control`
+header, and the web UI renders instantly — server config is fetched in the
+background instead of blocking the first paint.
+
 ---
 
 # 🚀 Quick Start
