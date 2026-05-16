@@ -380,6 +380,31 @@
         return h + "h " + m + "m";
       }
 
+      // A plausible decoy message, shown when a real one cannot be decrypted
+      // (never existed, expired, already read, or wrong key) — so an observer
+      // cannot tell a dead link from a live one.
+      function generateFakeMessage() {
+        const w = (
+          "the a this that secret note here is was meeting at room code key " +
+          "access for you me bring keep find call send wait check leave under " +
+          "behind near old new next door office desk drawer file folder report " +
+          "number account login backup server please do not forget remember " +
+          "confirm before after done ready safe quiet alone tonight tomorrow " +
+          "morning later soon trust plan changed signal contact details"
+        ).split(" ");
+        const rint = (n) => Math.floor(Math.random() * n);
+        const out = [];
+        const sentences = 1 + rint(3);
+        for (let s = 0; s < sentences; s++) {
+          const words = [];
+          const len = 5 + rint(12);
+          for (let i = 0; i < len; i++) words.push(w[rint(w.length)]);
+          let sent = words.join(" ");
+          out.push(sent.charAt(0).toUpperCase() + sent.slice(1) + ".");
+        }
+        return out.join(" ");
+      }
+
       // ── Load existing message ──
       async function loadMessage(id) {
         // Hide trust badges and tagline when viewing a message
@@ -397,50 +422,48 @@
           </div>
         `;
 
-        const showGone = () => {
-          container.innerHTML = `
-            <div class="flex flex-col items-center py-6">
-              <svg class="w-12 h-12 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-              </svg>
-              <p class="text-gray-400 text-lg font-medium mb-1">This message is gone</p>
-              <p class="text-gray-600 text-sm mb-6">It was already read or has expired.</p>
-              <a href="/" class="px-5 py-2.5 bg-red-600 hover:bg-red-500 rounded-lg text-white text-sm font-medium transition-all">Create your own</a>
-            </div>
-          `;
-        };
-
+        let plaintext;
         try {
-          const response = await fetch(
-            `/api/v1/messages/${encodeURIComponent(id)}`,
-          );
+          // Config and message fetched together — the spinner covers the wait.
+          const [cfg, response] = await Promise.all([
+            fetch("/api/v1/about")
+              .then((r) => r.json())
+              .catch(() => null),
+            fetch(`/api/v1/messages/${encodeURIComponent(id)}`),
+          ]);
+          if (cfg && typeof cfg.encryption === "boolean")
+            ENCRYPTION = cfg.encryption;
           const data = await response.json();
-          if (data.error) {
-            showGone();
-            return;
-          }
 
-          let plaintext;
-          if (ENCRYPTION) {
+          if (data.error) {
+            plaintext = generateFakeMessage();
+          } else if (ENCRYPTION) {
             // The key lives in the URL fragment, never sent to the server.
             const key = window.location.hash.slice(1);
-            if (!key) {
-              showGone();
-              return;
-            }
             try {
-              plaintext = await decryptMessage(data.content, key);
+              plaintext = key
+                ? await decryptMessage(data.content, key)
+                : generateFakeMessage();
             } catch {
-              // Wrong key, or a decoy returned by the confusion strategy.
-              showGone();
-              return;
+              // Wrong key, or a confusion decoy — show a believable decoy.
+              plaintext = generateFakeMessage();
             }
           } else {
             plaintext = data.content;
           }
-
-          const escaped = escapeHtml(plaintext);
+        } catch {
           container.innerHTML = `
+            <div class="flex flex-col items-center py-6">
+              <p class="text-red-400 font-medium mb-2">Something went wrong</p>
+              <p class="text-gray-600 text-sm mb-6">Please try again later.</p>
+              <a href="/" class="px-5 py-2.5 bg-red-600 hover:bg-red-500 rounded-lg text-white text-sm font-medium transition-all">Back to home</a>
+            </div>
+          `;
+          return;
+        }
+
+        const escaped = escapeHtml(plaintext);
+        container.innerHTML = `
               <div class="w-full reveal">
                 <p class="text-gray-600 text-xs mb-3 flex items-center justify-center gap-1.5">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
@@ -475,15 +498,6 @@
                 window.getSelection().addRange(range);
               }
             });
-        } catch {
-          container.innerHTML = `
-            <div class="flex flex-col items-center py-6">
-              <p class="text-red-400 font-medium mb-2">Something went wrong</p>
-              <p class="text-gray-600 text-sm mb-6">Please try again later.</p>
-              <a href="/" class="px-5 py-2.5 bg-red-600 hover:bg-red-500 rounded-lg text-white text-sm font-medium transition-all">Back to home</a>
-            </div>
-          `;
-        }
       }
 
       // ── Create message ──
@@ -731,7 +745,8 @@
         if (btn) btn.disabled = size === 0 || size > limit;
       }
 
-      // Build the composer UI (runs after /about so limits are known).
+      // Build the composer UI (renders instantly with default limits;
+      // refreshConfig() adjusts them afterwards).
       function buildComposer() {
         container.innerHTML = `
           <textarea
@@ -774,34 +789,38 @@
         updateCharCount();
       }
 
-      // ── Init ──
-      // Fetch the server config first: it tells us whether encryption is on,
-      // which loadMessage() needs before it can decrypt.
-      async function init() {
+      // Refresh the composer limits from the server config, in the
+      // background — the UI is already interactive with the defaults.
+      async function refreshConfig() {
         try {
           const cfg = await fetch("/api/v1/about").then((r) => r.json());
           if (cfg && cfg.maxMessageLength > 0) MAX_LENGTH = cfg.maxMessageLength;
           if (cfg && typeof cfg.encryption === "boolean")
             ENCRYPTION = cfg.encryption;
+          const input = document.getElementById("message-input");
+          if (input) input.maxLength = MAX_LENGTH + 100;
+          updateCharCount();
         } catch {
           // Keep the secure defaults (encryption on).
         }
-
-        const params = new URLSearchParams(window.location.search);
-        const preId = params.get("message");
-        if (preId) {
-          // Message pages must never be indexed by search engines.
-          const noindex = document.createElement("meta");
-          noindex.name = "robots";
-          noindex.content = "noindex, nofollow";
-          document.head.appendChild(noindex);
-          loadMessage(preId);
-        } else {
-          buildComposer();
-        }
       }
 
-      init();
+      // ── Init ──
+      // The UI renders immediately with safe defaults; no blocking fetch
+      // stands between page load and first paint.
+      const params = new URLSearchParams(window.location.search);
+      const preId = params.get("message");
+      if (preId) {
+        // Message pages must never be indexed by search engines.
+        const noindex = document.createElement("meta");
+        noindex.name = "robots";
+        noindex.content = "noindex, nofollow";
+        document.head.appendChild(noindex);
+        loadMessage(preId);
+      } else {
+        buildComposer();
+        refreshConfig();
+      }
     </script>
   </body>
 </html>
