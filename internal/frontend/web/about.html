@@ -121,7 +121,7 @@
           <li><code class="text-red-400">isOneShot</code> — <code class="text-gray-300">true</code> to destroy after first read (default: true)</li>
         </ul>
         <p class="text-gray-400 text-sm mb-1">Example:</p>
-        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl -X POST https://remanence.app/api/v1/messages \
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl -X POST https://remanence.thirasoft.com/api/v1/messages \
   -d "content=my secret" \
   -d "isOneShot=true" \
   -d "lifeLimit=60"</code></pre>
@@ -131,7 +131,7 @@
         <h3 class="text-white font-semibold text-sm mb-2">Retrieve a message</h3>
         <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-3"><code>GET /api/v1/messages/{id}</code></pre>
         <p class="text-gray-400 text-sm mb-1">Example:</p>
-        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl https://remanence.app/api/v1/messages/aBcDeFgHiJkLmNoP</code></pre>
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl https://remanence.thirasoft.com/api/v1/messages/aBcDeFgHiJkLmNoP</code></pre>
         <p class="text-gray-400 text-sm mb-1">Response:</p>
         <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-6"><code>{"id": "aBcDeFgHiJkLmNoP", "content": "my secret"}</code></pre>
       </section>

@@ -22,8 +22,13 @@ var (
 
 	// Message settings
 	MessageIDLength  = getEnvInt("MESSAGE_ID_LENGTH", 16)
-	MaxMessageLength = getEnvInt("MAX_MESSAGE_LENGTH", 1024)
+	MaxMessageLength = getEnvInt("MAX_MESSAGE_LENGTH", 2048)
 	MaxLifeLimit     = 1440 // in minutes (24 hours)
+
+	// End-to-end encryption is enabled by default. The browser encrypts
+	// messages before sending them; the server only ever stores ciphertext.
+	// Set ENCRYPTION_ENABLED=false to disable it and store plaintext.
+	EncryptionEnabled = !strings.EqualFold(getEnv("ENCRYPTION_ENABLED", "true"), "false")
 )
 
 func ParseLogLevel() slog.Level {

@@ -25,6 +25,9 @@ type Message struct {
 const (
 	idChars            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	randomContentChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?;:'-()@#&"
+	// base64 alphabet — used when encryption is on so fake content is
+	// indistinguishable from a real encrypted envelope.
+	base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 )
 
 var (
@@ -142,14 +145,25 @@ func NewMessage(id, content string, isOneShot bool, lifeLimit int) error {
 
 // RandomContent generates cryptographically random content that is
 // indistinguishable from a real message to an outside observer.
+//
+// When encryption is enabled, real messages are base64-encoded encrypted
+// envelopes — so the decoy uses the base64 alphabet too, otherwise an
+// attacker probing IDs could tell prose decoys from real ciphertext.
 func RandomContent() string {
 	charset := []byte(randomContentChars)
+	if config.EncryptionEnabled {
+		charset = []byte(base64Chars)
+	}
 	max := big.NewInt(int64(len(charset)))
 
 	// Random length between 10 and MAX_MESSAGE_LENGTH
 	lengthRange := big.NewInt(int64(config.MaxMessageLength - 10))
 	n, _ := rand.Int(rand.Reader, lengthRange)
 	length := int(n.Int64()) + 10
+	if config.EncryptionEnabled {
+		// base64 strings have a length that is a multiple of 4.
+		length -= length % 4
+	}
 
 	b := make([]byte, length)
 	for i := range b {

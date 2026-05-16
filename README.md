@@ -242,6 +242,31 @@ curl https://remanence.thirasoft.com/api/v1/messages/aBcDeFgHiJkLmNoP
 
 # 🔐 Security
 
+## End-to-end encryption
+
+Enabled by default. The web interface encrypts every message **in the browser**
+before it is sent — the server (and any proxy or CDN in front of it, such as
+Cloudflare) only ever sees and stores ciphertext.
+
+- **Cipher:** AES-256-GCM via the native Web Crypto API — no external library.
+- **Envelope:** the stored `content` is `base64( IV[12 bytes] || ciphertext+tag )`.
+- **Key handling:** a fresh random key is generated per message and placed in
+  the URL **fragment** (`...?message=<id>#<key>`). The fragment is never sent
+  to the server, so the key stays client-side.
+- **Reading:** the recipient's browser reads the key from the `#`, fetches the
+  ciphertext and decrypts locally. A missing key or failed decryption shows the
+  regular "this message is gone" screen.
+
+Disable it with `ENCRYPTION_ENABLED=false` to store plaintext (e.g. for a
+trusted internal deployment). The web UI reads this setting from
+`/api/v1/about` and adapts automatically.
+
+> **API note:** the server is content-agnostic. To produce messages readable
+> in the web UI, a client must reproduce the envelope above and put the key in
+> the link's `#`. A raw `curl` posting plaintext while encryption is on will be
+> stored as-is but will fail to decrypt in the browser. A reference CLI for the
+> envelope format is planned in a follow-up.
+
 ## Rate limiting
 
 Default:
@@ -293,7 +318,8 @@ Rémanence follows 12-factor app principles.
 | `LOG_LEVEL`   | `ERROR` | `DEBUG`, `INFO`, `WARN`, `ERROR`        |
 | `TRUST_PROXY` | `false` | Enable behind Nginx/Caddy/reverse proxy |
 | `MESSAGE_ID_LENGTH` | `16` | Length of *generated* message IDs (tune for local vs production entropy) |
-| `MAX_MESSAGE_LENGTH` | `1024` | Maximum message length, in characters |
+| `MAX_MESSAGE_LENGTH` | `2048` | Maximum stored message length, in characters (the encrypted payload — see below) |
+| `ENCRYPTION_ENABLED` | `true` | End-to-end encryption. Set to `false` to store plaintext instead |
 
 ---
 

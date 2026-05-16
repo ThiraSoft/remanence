@@ -13,6 +13,7 @@ type AboutResponse struct {
 	Version          string `json:"version"`
 	BuildDate        string `json:"buildDate"`
 	MaxMessageLength int    `json:"maxMessageLength"`
+	Encryption       bool   `json:"encryption"`
 }
 
 // handleAboutEndpoint implements the /about endpoint
@@ -22,6 +23,7 @@ func HandleAboutEndpoint(w http.ResponseWriter, r *http.Request) {
 		Version:          config.AppVersion,
 		BuildDate:        config.BuildDate,
 		MaxMessageLength: config.MaxMessageLength,
+		Encryption:       config.EncryptionEnabled,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
