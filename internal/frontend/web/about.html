@@ -120,14 +120,17 @@
           <li><code class="text-red-400">lifeLimit</code> — lifetime in minutes, 1–1440 (default: 1440)</li>
           <li><code class="text-red-400">isOneShot</code> — <code class="text-gray-300">true</code> to destroy after first read (default: true)</li>
         </ul>
-        <p class="text-gray-500 text-xs mb-3">
-          The server is content-agnostic and never encrypts for you. To post
+        <p class="border-l-2 border-red-500 bg-red-500/10 rounded-r-lg px-3 py-2 text-gray-300 text-sm mb-3">
+          <strong class="text-red-400">No encryption over curl.</strong> The
+          server is content-agnostic and never encrypts for you: raw API calls
+          store <code class="text-gray-100">content</code> as-is. To post
           messages readable in the browser, encrypt client-side first — or use
-          the CLI below, which does it for you.
+          the <code class="text-gray-100">rem</code> CLI below, which does it
+          for you.
         </p>
         <p class="text-gray-400 text-sm mb-1">Example:</p>
         <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl -X POST https://remanence.thirasoft.com/api/v1/messages \
-  -d "content=my secret" \
+  -d "content=my secret" \   # sent as-is — encrypt yourself for browser reads
   -d "isOneShot=true" \
   -d "lifeLimit=60"</code></pre>
         <p class="text-gray-400 text-sm mb-6">Response: <code class="text-gray-300">{"id": "aBcDeFgHiJkLmNoP"}</code></p>
