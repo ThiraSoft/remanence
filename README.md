@@ -162,7 +162,7 @@ Create a confidential message, share the generated link, and let Rémanence hand
 
 Workflow:
 
-1. The message is stored temporarily
+1. The message is encrypted on your device, then stored temporarily
 2. A unique access link is generated
 3. The message self-destructs:
    - after being read,
@@ -241,6 +241,62 @@ curl https://remanence.thirasoft.com/api/v1/messages/aBcDeFgHiJkLmNoP
   "content": "my secret"
 }
 ```
+
+> **Note:** the server is content-agnostic — it never encrypts for you. When
+> encryption is on, `content` must already be ciphertext (see
+> [End-to-end encryption](#-security)). Posting plaintext directly will store
+> it as-is but it will fail to decrypt in the browser. Use the CLI below to
+> avoid implementing the envelope yourself.
+
+---
+
+# 🖥 Command-line tool
+
+`rem` is a zero-dependency CLI client. It encrypts and decrypts transparently
+using the **same scheme as the web interface**, so links are interchangeable
+between the two. It is the recommended way to use Rémanence from scripts and
+CI pipelines.
+
+## Build
+
+```bash
+make cli                 # produces ./bin/rem
+make install             # installs to /usr/local/bin (PREFIX overridable)
+```
+
+## Send a message
+
+```bash
+rem send "deploy token: abc123" --ttl 30m
+echo "$SECRET" | rem send --quiet          # message from stdin
+rem send -m "read me twice" --keep --ttl 2h
+```
+
+Prints a share link with the encryption key in the `#` fragment (copied to the
+clipboard when possible).
+
+## Read a message
+
+```bash
+rem get "https://host/?message=aBcDeFgHiJkLmNoP#<key>"   # key from the link
+rem get aBcDeFgHiJkLmNoP --key <key> --raw               # key passed separately
+```
+
+## Options
+
+| Flag                 | Command | Description                                   |
+| -------------------- | ------- | --------------------------------------------- |
+| `-t, --ttl <dur>`    | send    | Lifetime: minutes, or `30m` / `2h` (max 24h)  |
+| `--keep`             | send    | Keep after read (default: burn on first read) |
+| `-q, --quiet`        | send    | Print only the share link                     |
+| `-k, --key <key>`    | get     | Decryption key, when not embedded in a link   |
+| `-r, --raw`          | get     | Print only the message content                |
+| `-y, --yes`          | get     | Skip the "may destroy the message" prompt     |
+| `-s, --server <url>` | both    | Server base URL                               |
+| `--json`             | both    | Machine-readable output                       |
+
+The server defaults to `$REMANENCE_SERVER`, or `http://localhost:8080`. The CLI
+respects the server's `ENCRYPTION_ENABLED` setting automatically.
 
 ---
 

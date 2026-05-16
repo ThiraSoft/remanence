@@ -98,7 +98,7 @@
           Rémanence handle the rest:
         </p>
         <ul class="list-disc list-inside space-y-1 text-gray-400">
-          <li>the message is stored temporarily;</li>
+          <li>the message is encrypted on your device, then stored temporarily;</li>
           <li>it self-destructs after being read or after a chosen delay;</li>
           <li>no personal data is ever recorded.</li>
         </ul>
@@ -116,10 +116,15 @@
         <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-3"><code>POST /api/v1/messages</code></pre>
         <p class="text-gray-400 text-sm mb-2">Form parameters:</p>
         <ul class="list-disc list-inside space-y-1 text-gray-400 text-sm mb-3">
-          <li><code class="text-red-400">content</code> — the secret message (required, max 1024 chars)</li>
+          <li><code class="text-red-400">content</code> — the message payload (required); when encryption is on, this must be ciphertext</li>
           <li><code class="text-red-400">lifeLimit</code> — lifetime in minutes, 1–1440 (default: 1440)</li>
           <li><code class="text-red-400">isOneShot</code> — <code class="text-gray-300">true</code> to destroy after first read (default: true)</li>
         </ul>
+        <p class="text-gray-500 text-xs mb-3">
+          The server is content-agnostic and never encrypts for you. To post
+          messages readable in the browser, encrypt client-side first — or use
+          the CLI below, which does it for you.
+        </p>
         <p class="text-gray-400 text-sm mb-1">Example:</p>
         <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl -X POST https://remanence.thirasoft.com/api/v1/messages \
   -d "content=my secret" \
@@ -134,6 +139,35 @@
         <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>curl https://remanence.thirasoft.com/api/v1/messages/aBcDeFgHiJkLmNoP</code></pre>
         <p class="text-gray-400 text-sm mb-1">Response:</p>
         <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-6"><code>{"id": "aBcDeFgHiJkLmNoP", "content": "my secret"}</code></pre>
+      </section>
+
+      <section class="mt-6">
+        <h2 class="text-2xl font-semibold text-red-500 mb-4">Command-line tool</h2>
+        <p class="text-gray-300 mb-6">
+          <code class="text-red-400">rem</code> is a zero-dependency CLI client.
+          It encrypts and decrypts for you using the same scheme as this web
+          interface, so links work across both. Recommended for scripts and
+          CI pipelines.
+        </p>
+
+        <h3 class="text-white font-semibold text-sm mb-2">Send a message</h3>
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>rem send "my secret" --ttl 30m
+echo "$TOKEN" | rem send --quiet</code></pre>
+        <p class="text-gray-400 text-sm mb-6">
+          Prints a share link with the key in the
+          <code class="text-red-400">#</code> fragment.
+        </p>
+
+        <h3 class="text-white font-semibold text-sm mb-2">Read a message</h3>
+        <pre class="bg-black/40 rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto mb-2"><code>rem get "https://remanence.thirasoft.com/?message=aBcDeFgHiJkLmNoP#&lt;key&gt;"</code></pre>
+        <p class="text-gray-400 text-sm mb-2">
+          Decryption happens locally; a burn-after-read message is destroyed on
+          first read.
+        </p>
+        <p class="text-gray-500 text-xs">
+          Build it with <code class="text-gray-300">make cli</code> (produces
+          <code class="text-gray-300">./bin/rem</code>).
+        </p>
       </section>
 
       <section class="mt-6">

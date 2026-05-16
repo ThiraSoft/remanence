@@ -9,6 +9,10 @@
 *.dylib
 main
 
+# Build artifacts
+/bin/
+/remanence
+
 # Test binary, built with `go test -c`
 *.test
 
