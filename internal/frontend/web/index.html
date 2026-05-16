@@ -380,29 +380,18 @@
         return h + "h " + m + "m";
       }
 
-      // A plausible decoy message, shown when a real one cannot be decrypted
-      // (never existed, expired, already read, or wrong key) — so an observer
-      // cannot tell a dead link from a live one.
+      // A decoy shown when a real message cannot be decrypted (never existed,
+      // expired, already read, or wrong key) — so an observer cannot tell a
+      // dead link from a live one. A high-entropy random string, the kind of
+      // secret (password, API key, token) this tool is most used to share.
       function generateFakeMessage() {
-        const w = (
-          "the a this that secret note here is was meeting at room code key " +
-          "access for you me bring keep find call send wait check leave under " +
-          "behind near old new next door office desk drawer file folder report " +
-          "number account login backup server please do not forget remember " +
-          "confirm before after done ready safe quiet alone tonight tomorrow " +
-          "morning later soon trust plan changed signal contact details"
-        ).split(" ");
-        const rint = (n) => Math.floor(Math.random() * n);
-        const out = [];
-        const sentences = 1 + rint(3);
-        for (let s = 0; s < sentences; s++) {
-          const words = [];
-          const len = 5 + rint(12);
-          for (let i = 0; i < len; i++) words.push(w[rint(w.length)]);
-          let sent = words.join(" ");
-          out.push(sent.charAt(0).toUpperCase() + sent.slice(1) + ".");
-        }
-        return out.join(" ");
+        const charset =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const len = 12 + Math.floor(Math.random() * 69); // 12–80 chars
+        const bytes = crypto.getRandomValues(new Uint8Array(len));
+        let s = "";
+        for (let i = 0; i < len; i++) s += charset[bytes[i] % charset.length];
+        return s;
       }
 
       // ── Load existing message ──

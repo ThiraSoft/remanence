@@ -255,8 +255,8 @@ Cloudflare) only ever sees and stores ciphertext.
   to the server, so the key stays client-side.
 - **Reading:** the recipient's browser reads the key from the `#`, fetches the
   ciphertext and decrypts locally. When decryption fails — message never
-  existed, expired, already read, or wrong key — the UI shows a plausible
-  decoy message, so an observer cannot tell a dead link from a live one.
+  existed, expired, already read, or wrong key — the UI shows a random
+  decoy string, so an observer cannot tell a dead link from a live one.
 
 Disable it with `ENCRYPTION_ENABLED=false` to store plaintext (e.g. for a
 trusted internal deployment). The web UI reads this setting from
