@@ -2,6 +2,7 @@ package messages
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"log/slog"
 	"math/big"
@@ -25,9 +26,9 @@ type Message struct {
 const (
 	idChars            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	randomContentChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?;:'-()@#&"
-	// base64 alphabet — used when encryption is on so fake content is
-	// indistinguishable from a real encrypted envelope.
-	base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	// A real encrypted envelope is base64( IV[12] || ciphertext+tag[16+] ),
+	// so its smallest possible size is 29 bytes (12 + 16 + 1 of plaintext).
+	minEnvelopeBytes = 29
 )
 
 var (
@@ -144,26 +145,34 @@ func NewMessage(id, content string, isOneShot bool, lifeLimit int) error {
 }
 
 // RandomContent generates cryptographically random content that is
-// indistinguishable from a real message to an outside observer.
+// indistinguishable from a real message to an outside observer — the
+// "confusion" decoy returned for unknown or expired IDs.
 //
 // When encryption is enabled, real messages are base64-encoded encrypted
-// envelopes — so the decoy uses the base64 alphabet too, otherwise an
-// attacker probing IDs could tell prose decoys from real ciphertext.
+// envelopes. The decoy is therefore built by base64-encoding random bytes
+// of a plausible envelope size: this matches the real content's alphabet,
+// its padding (=) and its length distribution, so an attacker probing IDs
+// cannot tell a decoy from real ciphertext.
 func RandomContent() string {
-	charset := []byte(randomContentChars)
 	if config.EncryptionEnabled {
-		charset = []byte(base64Chars)
+		// Largest envelope whose base64 form still fits MaxMessageLength.
+		maxEnvelope := config.MaxMessageLength / 4 * 3
+		if maxEnvelope <= minEnvelopeBytes {
+			maxEnvelope = minEnvelopeBytes + 1
+		}
+		n, _ := rand.Int(rand.Reader, big.NewInt(int64(maxEnvelope-minEnvelopeBytes)))
+		b := make([]byte, int(n.Int64())+minEnvelopeBytes)
+		rand.Read(b)
+		return base64.StdEncoding.EncodeToString(b)
 	}
+
+	charset := []byte(randomContentChars)
 	max := big.NewInt(int64(len(charset)))
 
 	// Random length between 10 and MAX_MESSAGE_LENGTH
 	lengthRange := big.NewInt(int64(config.MaxMessageLength - 10))
 	n, _ := rand.Int(rand.Reader, lengthRange)
 	length := int(n.Int64()) + 10
-	if config.EncryptionEnabled {
-		// base64 strings have a length that is a multiple of 4.
-		length -= length % 4
-	}
 
 	b := make([]byte, length)
 	for i := range b {
