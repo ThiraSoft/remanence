@@ -241,7 +241,12 @@
           </svg>
           No registration
         </span>
-        <span class="flex items-center gap-1.5">
+        <a
+          href="https://github.com/ThiraSoft/remanence"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center gap-1.5 hover:text-gray-400 transition-colors"
+        >
           <svg
             class="w-3.5 h-3.5"
             fill="none"
@@ -256,7 +261,7 @@
             />
           </svg>
           Open source
-        </span>
+        </a>
       </div>
     </div>
 
@@ -591,15 +596,16 @@
         `;
         const handleEnter = (e) => {
           if (e.key === "Enter") {
+            e.preventDefault();
             document.getElementById("confirmBtn")?.click();
           }
         };
         setTimeout(() => {
-          document.addEventListener("keyup", handleEnter);
+          document.addEventListener("keydown", handleEnter);
         }, 0);
 
         const cleanup = () => {
-          document.removeEventListener("keyup", handleEnter);
+          document.removeEventListener("keydown", handleEnter);
         };
 
         popup.addEventListener("click", (e) => {
@@ -758,11 +764,14 @@
         `;
         const input = document.getElementById("message-input");
         input.addEventListener("input", updateCharCount);
-        input.addEventListener("keyup", (e) => {
+        input.addEventListener("keydown", (e) => {
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
             e.preventDefault();
             e.stopPropagation();
-            messageSettingsPopup();
+            const btn = document.getElementById("submit-btn");
+            if (btn && !btn.disabled) {
+              messageSettingsPopup();
+            }
           }
         });
         document
